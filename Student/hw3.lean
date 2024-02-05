@@ -7,13 +7,24 @@ case analysis on n. When you've succeeded the following test cases
 should run and return the expected values.
 -/
 
+/-Total funciton: a function covering all possible cases-/
+
 def dec' : Nat → Nat
 | 0 => 0
 | Nat.succ n' => n'
 
+def dec2 : Nat → Nat
+| 0 => 0
+| 1 => 0
+| Nat.succ (Nat.succ n') => n'
+
 #eval dec' 2    -- expect 1
 #eval dec' 1    -- expect 0
 #eval dec' 0    -- expect 0
+
+#eval dec2 3
+#eval dec2 2
+#eval dec2 1
 
 /-
 #2
@@ -25,6 +36,11 @@ expected to return [1, 2, 3]. Write a few test cases where α is String, β is
 Nat, and f is String.length. Hint: Use case analysis on the incoming list: it
 will be either List.nil or (List.cons h t), the latter of which can also be
 written as (h::t).
+-/
+
+/-Maproduce--Google search
+
+In this case, α is the webpage, β is the index, f is the mapping function
 -/
 
 def l2l {α β : Type} : (α → β) → List α → List β
@@ -44,17 +60,21 @@ or "defined α". If α is Nat, for example, then you would have (undefined) and
 to disable implicit arguments, as there's no value provided to this constructor
 from which Lean can infer α.
 -/
+/-Actually should be called optional-type-/
 
 -- inductive PRFV (α : Type) where
 -- | undefined : PRFV α
 -- | defined (a :  α) : PRFV α
 
-inductive PRFV (α : Type)
+inductive PFRV (α : Type)
 | defined (a : α)
 | undefined
 
-#check @PRFV.undefined Nat    -- expect PRFV
-#check PRFV.defined 3        -- Expect PRFV
+#check @PFRV.undefined Nat    -- expect PRFV
+#check PFRV.defined 3        -- Expect PRFV
+
+def p1: PFRV Nat := PFRV.undefined
+def p2:= PFRV.defined 1
 
 /-!
 #4
@@ -67,10 +87,11 @@ You will thus represent a partial function from Nat to Nat as a total function
 from Nat to PRFV Nat.
 -/
 
-def dec : Nat → PRFV Nat
-| 0 => PRFV.undefined
-| Nat.succ n' =>  PRFV.defined n'
+def dec : Nat → PFRV Nat
+| 0 => PFRV.undefined
+| Nat.succ n' =>  PFRV.defined n'
 
+#reduce dec 2
 
 /-!
 #5
@@ -94,9 +115,67 @@ PFRV α is "undefined" and true otherwise. The following test cases should then
 return the expected values.
 -/
 
-def isDef {α : Type }: PRFV α → Bool
-|PRFV.undefined => false
+def isDef {α : Type }: PFRV α → Bool
+|PFRV.undefined => false
 |_ => true
 
 #eval isDef (dec 0)   -- expect false
 #eval isDef (dec 1)   -- expect true
+
+/-Lecture 2/5 material-/
+
+/-!
+The fold right function
+
+Map function takes a list and returns a list
+Fold function takes a list and reduce it to a single value
+-/
+
+def foldr''' : (Nat → Nat → Nat) → Nat → List Nat → Nat
+|_, id, [] => id
+|op, id, h::t => op h (foldr''' op id t)
+
+-- #reduce foldr''' Nat.add [1,2,3,4,5]
+-- #reduce foldr''' Nat.mul [1,2,3,4,5] --notworking
+
+-- so we add an argument
+#reduce foldr''' Nat.add 0 [1,2,3,4,5]
+#reduce foldr''' Nat.mul 1 [1,2,3,4,5]
+#reduce foldr''' Nat.sub 0 [5,3,1]
+
+/-!
+Write a function, a fold_str that takes a list of strings
+and returns a single string in which all the given strings
+are appended using String.append
+-/
+
+#check String.append
+
+def fold_str : List String → String
+| [] => ""
+| h::t => String.append h (fold_str t)
+
+#eval fold_str ["What","are","you","doing"]
+
+def foldr'' : (String→ String→ String) → String → List String → String
+| _, id, [] => id
+| op, id, h::t => op h (foldr'' op id t)
+
+#eval foldr'' String.append "" ["What","are","you","doing"]
+
+def foldr' {α : Type} : (α → α → α) → α → List α → α
+| _, id, [] => id
+| op, id, h::t => op h (foldr' op id t)
+
+#eval foldr' String.append "" ["What","are","you","doing"]
+
+/-!
+reduce a list of strings to a Bool, true if all strings in
+the list have even length
+-/
+
+def combine : String → Bool → Bool := _
+
+def foldr {α β : Type} : (α → β → β) → β → List α → β
+| _, id, []=> id
+| op, id, h::t => op h (foldr op id t)
