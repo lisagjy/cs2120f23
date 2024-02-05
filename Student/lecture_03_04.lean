@@ -318,7 +318,7 @@ few inputs, including 5. Give your answer here:
 
 -- here:
 
-def square : Nat → Nat
+def square' : Nat → Nat
 | n => n^2
 
 #eval square 4  -- expect 16
@@ -431,7 +431,7 @@ the following test cases should work.
 
 -- Answer:
 
-def apply2 : { α : Type } → (α → α) → α → α
+def apply2'' : { α : Type } → (α → α) → α → α
 | _, f, a => f (f a)
 
 -- Now the type arguments are implicit!
