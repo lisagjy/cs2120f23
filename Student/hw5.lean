@@ -96,3 +96,58 @@ def pred : Nat → Option Nat
 def option_map {α β : Type} : (α → β) → Option α → Option β
 |f, Option.none => Option.none
 |f, Option.some a => some (f a)
+
+
+/-! 2/14 Notes-/
+
+#check @List
+inductive Tree (α : Type)
+| empty : Tree α
+| node : α → Tree α → Tree α → Tree α --node (root: α) (left: Tree α) (right: Tree α): Tree α?
+--node (root: α) (l r : Tree α) : Tree
+
+def Tree_map {α β : Type} :  (α → β) → Tree α → Tree β
+|_, Tree.empty => Tree.empty
+|f, Tree.node root l r => Tree.node (f root) (Tree_map f l) (Tree_map f r)
+
+#reduce Tree_map Nat.succ Tree.empty
+
+def a_tree := Tree.node 1
+  (Tree.node 2 Tree.empty Tree.empty)
+  (Tree.node 3 Tree.empty Tree.empty)
+
+#reduce Tree_map Nat.succ a_tree
+
+/-! Parametric Polymorphism does not hold true here
+It cannot capture the commonality of option map, list map, tree map
+
+What do we do when encounter such problem in Java or CPP?
+We have an abstract class to capture the commonality, and implement subclasses to handle the difference
+--What is it called?
+Ad-hoc polymorphism
+Ad-hoc : concerning a specific case-/
+
+/-!
+What is the type of List?
+List is a function of type: Type → Type
+-/
+
+def list_map {α β : Type} : (α → β) → List α → List β
+|_, [] => []
+|f, h::t => (f h)::(list_map f t)
+
+structure functor {α β : Type} (c : Type → Type) : Type where
+map (f: α → β) (ic: c α) : c β
+
+def list_functor {α β : Type}: @functor α β List := functor.mk list_map
+def option_functor {α β : Type}: @functor α β Option:= functor.mk option_map
+#check (@list_functor)
+def convert {α β :Type} (c:Type → Type) (m:@functor α β c): (f:α → β) → c α → c β
+|f, c => m.map f c
+
+#reduce convert List list_functor Nat.succ [1,2]
+#reduce convert Option option_functor Nat.succ (Option.some 1)
+
+
+inductive box (α : Type)
+| contents (a:α)
