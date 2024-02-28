@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Algebra.AddTorsor
 /-!
 We now turn to formalization of mathematical structures
 using the rich collection of abstractions already defined
@@ -171,7 +170,7 @@ AddMonoid instance for Rotations.
 
 /-!
 AddMonoid.mk.{u}
-  {M : Type u}
+  {M : Type u} --implicit type
   [toAddSemigroup : AddSemigroup M]
   [toZero : Zero M]
   (zero_add : ∀ (a : M), 0 + a = a)
@@ -272,8 +271,7 @@ AddMonoid.mk.{u}
   [toZero : Zero M]
   (zero_add : ∀ (a : M), 0 + a = a)
   (add_zero : ∀ (a : M), a + 0 = a)
-  (nsmul : ℕ → M → M)
-  (nsmul_zero : ∀ (x : M), nsmul 0 x = 0 := by intros; rfl)
+  (nsmul : ℕ → M → M) (nsmul_zero : ∀ (x : M), nsmul 0 x = 0 := by intros; rfl)
   (nsmul_succ : ∀ (n : ℕ) (x : M), nsmul (n + 1) x = x + nsmul n x := by intros; rfl) :
   AddMonoid M
   -/
@@ -369,8 +367,7 @@ extends VAdd : Type (max u_10 u_11)
   vadd : G → P → P
   zero_vadd : ∀ (p : P), 0 +ᵥ p = p
   add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
-
-
+=
 class VAdd (G : Type u) (P : Type v) : Type (max u v)
     vadd : G → P → P
 
@@ -379,36 +376,30 @@ class VAdd (G : Type u) (P : Type v) : Type (max u v)
 /-! EXERCISE. Explain in English the meanings of the axioms
 for additive actions. Then implement AddAction for the Rotation type.
 -/
-
-def vadd_rot_state : Rotation → State → State
+instance zero_rot'' : Zero Rotation := ⟨ r0 ⟩
+def add_rot_state : Rotation → State → State
 | r0, s => s
 | r120, s0 => s120
-| r120, s120 => s240
-| r120, s240 => s0
 | r240, s0 => s240
-| r240, s120 => s0
+| r120, s240 => s0
 | r240, s240 => s120
+| r240, s120 => s0
+| r120, s120 => s240
 
-instance : VAdd Rotation State := ⟨ vadd_rot_state ⟩
-
+instance : VAdd Rotation State := ⟨ add_rot_state ⟩
 #check AddAction
 
-instance : AddAction Rotation State := {
-    zero_vadd := sorry,
-    add_vadd := sorry
-  }
+instance: AddAction Rotation State := {zero_vadd := sorry, add_vadd:= sorry}
 
-#reduce ((2 • r120) + (3 • r240) + (0 • r120)) +ᵥ r120
-
-#check AddGroup.mk
+#reduce r240 +ᵥ s120
 
 /-!
 ## Torsors (of Point-like objects)
 
-Definition of subtraction of positional States.
+Definition of subtraction of "positional" Tri_States.
 On a clock, for example, you can subtract 3PM from
 5PM to get two hours: the duration that, when added
-to 3PM, gets you back to 5PM. Here our "clock" has
+to 3PM, gets you back to 5PM. Here a "clock" has
 only three positions.
 -/
 def sub_State : State → State → Rotation
@@ -422,94 +413,3 @@ def sub_State : State → State → Rotation
 | s240, s0 => r240
 | s240, s120 => r120
 | s240, s240 => r0
-
-
-/-!
-What a group have is "inverse",
-a + inverse of a = identity
-
-Also, by having inverse, we automaticlaly have subtraction operations
--/
-
-/-!
-The idea of Torsor:
-
-s0,s120,s240 is Torsor over transformation monoid/group.
-
-in 2d ducldidean plane, do we have a torsor so that there
-is an associated monoid transformation that acts on the points in this set
-basically, you need a subtraction operation
-
-what exist in a torsor? points on which there
-is an associated monoid transformation set that acts by addition
-
-
---For the associated transformation set, we have seen:
-1) monoid
-2) we add inverse and sub, we have group
-3) for the next step, we want vector space
--/
-
-#check AddTorsor
-/-!
-G is group,
-P is a set of points
-how do you check if a type is nonempty? Just give it one/any value of this type
--ᵥ is point minus point yield vector (subtract two points to give a vector)
-+ᵥ add a vector to a point to get a point
-class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] extends AddAction G P,
-  VSub G P where
-  [nonempty : Nonempty P]
-  /-- Torsor subtraction and addition with the same element cancels out. -/
-  vsub_vadd' : ∀ p1 p2 : P, (p1 -ᵥ p2 : G) +ᵥ p2 = p1
-  /-- Torsor addition and subtraction with the same element cancels out. -/
-  vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
-#align add_torsor AddTorsor
--/
-
-/-!
-Affine Space
-the vector space with no origin
-
--/
-
-/-!
-To think about vectors, a coordinate has to exist
-But points can exist without the corresponding vectors, hence, no coordinates
-
--/
-
-
-/-!
-Homework #1: Endow Rotation with the additional structure of an additive group.
--/
-#check AddGroup.mk
-/-!
-AddGroup.mk.{u}
-  {A : Type u}
-  [toSubNegMonoid : SubNegMonoid A]
-  (add_left_neg : ∀ (a : A), -a + a = 0) :
-AddGroup A
--/
-
--- Hint:
-#check SubNegMonoid.mk
-/-!
-SubNegMonoid.mk.{u}
-  {G : Type u}
-  [toAddMonoid : AddMonoid G]
-  [toNeg : Neg G]
-  [toSub : Sub G]
-  (sub_eq_add_neg : ∀ (a b : G), a - b = a + -b := by intros; rfl) (zsmul : ℤ → G → G)
-  (zsmul_zero' : ∀ (a : G), zsmul 0 a = 0 := by intros; rfl)
-  (zsmul_succ' : ∀ (n : ℕ) (a : G), zsmul (Int.ofNat (Nat.succ n)) a = a + zsmul (Int.ofNat n) a := by intros; rfl)
-  (zsmul_neg' : ∀ (n : ℕ) (a : G), zsmul (Int.negSucc n) a = -zsmul (↑(Nat.succ n)) a := by intros; rfl) :
-SubNegMonoid G
--/
-
-/-!
-Homework #2: Endow State and Rotation with the additional structure of an
-additive torsor over that (additive) group.
--/
-
--- Hint: follow the same approach
