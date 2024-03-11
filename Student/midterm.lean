@@ -477,6 +477,7 @@ additive torsor over that (additive) group.
 
 instance : AddTorsor Rotation State := {
   vsub := sub_State
+  nonempty := sorry
   vsub_vadd' := sorry
   vadd_vsub' := sorry
 }
