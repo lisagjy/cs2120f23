@@ -457,8 +457,25 @@ def rot_neg : Rotation → Rotation
 | r120 => r240
 | r240 => r120
 
+def rot_sub : Rotation → Rotation → Rotation
+| r0, r0 => r0
+| r0, r120 => r240
+| r0, r240 => r120
+| r120, r0 => r120
+| r120, r120 => r0
+| r120, r240 => r240
+| r240, r0 => r240
+| r240, r120 => r120
+| r240, r240 => r0
+
+-- I understand that we can do instance SubNegMonoid separately,
+-- but I found that we can satisfy the requirements directly under
+-- instance AddGroup
+
 instance : AddGroup Rotation := {
   neg := rot_neg
+  --sub := rot_sub since we have neg, we actually automatically have sub
+  --This line can be added or removed, and it won't have any effect
   sub_eq_add_neg := sorry
   zsmul_zero' := sorry
   zsmul_succ' := sorry
