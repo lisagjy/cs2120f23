@@ -157,6 +157,7 @@ example (P : Prop) : (P ∨ ¬ P) → ¬¬P → P
 
 --- ∀ (P : Prop), P ∨ ¬P
 
+<<<<<<< HEAD
 /-!
 Proof utilization (elimination)
 -/
@@ -188,10 +189,14 @@ neither is rule of negation elimination
 
 #check Classical.em
 --- ∀ (P : Prop), P ∨ ¬P
+=======
+#check Classical.em
+>>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00
 
 -- Implication P → Q
 -- intro: show that from an *assumed* proof of P, you ca derive a proof of Q
 -- elim: *apply* that function to a proof of P to geta  proof of Q
+<<<<<<< HEAD
 
 --rule of negation elimination
 example (P : Prop) : (¬¬P → P) :=
@@ -221,3 +226,5 @@ inductive Eq : α → α → Prop where
 -/
 
 #check Eq.refl 1 0
+=======
+>>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00

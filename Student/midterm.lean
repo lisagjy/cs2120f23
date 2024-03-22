@@ -1,5 +1,9 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
+<<<<<<< HEAD
+=======
+import Mathlib.Algebra.AddTorsor
+>>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00
 /-!
 We now turn to formalization of mathematical structures
 using the rich collection of abstractions already defined
@@ -449,6 +453,42 @@ SubNegMonoid.mk.{u}
   (zsmul_neg' : ∀ (n : ℕ) (a : G), zsmul (Int.negSucc n) a = -zsmul (↑(Nat.succ n)) a := by intros; rfl) :
 SubNegMonoid G
 -/
+<<<<<<< HEAD
+=======
+#check Neg
+
+def rot_neg : Rotation → Rotation
+| r0 => r0
+| r120 => r240
+| r240 => r120
+
+def rot_sub : Rotation → Rotation → Rotation
+| r0, r0 => r0
+| r0, r120 => r240
+| r0, r240 => r120
+| r120, r0 => r120
+| r120, r120 => r0
+| r120, r240 => r240
+| r240, r0 => r240
+| r240, r120 => r120
+| r240, r240 => r0
+
+-- I understand that we can do instance SubNegMonoid separately,
+-- but I found that we can satisfy the requirements directly under
+-- instance AddGroup
+
+instance : AddGroup Rotation := {
+  neg := rot_neg
+  --sub := rot_sub since we have neg, we actually automatically have sub
+  --This line can be added or removed, and it won't have any effect
+  sub_eq_add_neg := sorry
+  zsmul_zero' := sorry
+  zsmul_succ' := sorry
+  zsmul_neg' := sorry
+  add_left_neg := sorry
+ }   -- using {} notation
+
+>>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00
 
 /-!
 Homework #2: Endow State and Rotation with the additional structure of an
@@ -456,3 +496,14 @@ additive torsor over that (additive) group.
 -/
 
 -- Hint: follow the same approach
+<<<<<<< HEAD
+=======
+#check AddTorsor
+
+instance : AddTorsor Rotation State := {
+  vsub := sub_State
+  nonempty := sorry
+  vsub_vadd' := sorry
+  vadd_vsub' := sorry
+}
+>>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00
