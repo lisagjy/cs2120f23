@@ -1,9 +1,6 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
-<<<<<<< HEAD
-=======
 import Mathlib.Algebra.AddTorsor
->>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00
 /-!
 We now turn to formalization of mathematical structures
 using the rich collection of abstractions already defined
@@ -453,8 +450,6 @@ SubNegMonoid.mk.{u}
   (zsmul_neg' : ∀ (n : ℕ) (a : G), zsmul (Int.negSucc n) a = -zsmul (↑(Nat.succ n)) a := by intros; rfl) :
 SubNegMonoid G
 -/
-<<<<<<< HEAD
-=======
 #check Neg
 
 def rot_neg : Rotation → Rotation
@@ -488,7 +483,6 @@ instance : AddGroup Rotation := {
   add_left_neg := sorry
  }   -- using {} notation
 
->>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00
 
 /-!
 Homework #2: Endow State and Rotation with the additional structure of an
@@ -496,8 +490,6 @@ additive torsor over that (additive) group.
 -/
 
 -- Hint: follow the same approach
-<<<<<<< HEAD
-=======
 #check AddTorsor
 
 instance : AddTorsor Rotation State := {
@@ -506,4 +498,3 @@ instance : AddTorsor Rotation State := {
   vsub_vadd' := sorry
   vadd_vsub' := sorry
 }
->>>>>>> cbdc141114f81a6524a1cf179b370784c92cea00

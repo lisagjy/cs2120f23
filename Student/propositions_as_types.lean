@@ -172,8 +172,8 @@ example (P Q: Prop) : P ∧ Q → P ∨ Q
 |⟨p, q⟩ => Or.inl p
 
 example (P Q : Prop) : P ∨ Q → Q ∨ p
-| Or.inl p => Or.inr p 
-| Or.inr q => Or.inl q 
+| Or.inl p => Or.inr p
+| Or.inr q => Or.inl q
 
 /-!
 Proof by negation
@@ -196,16 +196,16 @@ neither is rule of negation elimination
 --rule of negation elimination
 example (P : Prop) : (¬¬P → P) :=
 match (Classical.em P) with -- a proof of p or not p
-| Or.inl p => λ _ => p 
+| Or.inl p => λ _ => p
 | Or.inr np => λ _ => by contradiction
 
-/-! 
+/-!
 Implication
 -/
 
-def one_not_eq_zero (n : Nat) : n = 1 → n ≠ 0 := 
-λ (neq1 : n = 1) =>  λ (neq0 : n = 0) => by 
-  rw [neq1] at neq0 
+def one_not_eq_zero (n : Nat) : n = 1 → n ≠ 0 :=
+λ (neq1 : n = 1) =>  λ (neq0 : n = 0) => by
+  rw [neq1] at neq0
   cases neq0--elimination rule in equality
 
 /-!
@@ -221,3 +221,114 @@ inductive Eq : α → α → Prop where
 -/
 
 #check Eq.refl 1 0
+
+#check 1 = 0
+#check Eq 1 0
+#check Eq.refl 1
+
+example : 1 = 1 := Eq.refl 1
+
+/-!
+#### Predictes
+-/
+
+def isEven (n : Nat) : Prop := n % 2 = 0
+
+#check isEven 0
+#check isEven 1
+
+#reduce isEven 0
+#reduce isEven 1
+#reduce isEven 2
+#reduce isEven 3
+#reduce isEven 4
+#reduce isEven 5
+
+/-!
+#### For all (∀)
+
+In classical logic, the form of a universally
+quantified proposition is ∀ (p : P), Q. This
+says that for *any* (p : P) you can pick, Q is
+true.
+-/
+
+example : ∀ (n : Nat), isEven n := _ -- not true
+
+/-!
+#### Introduction
+-/
+
+example : ∀ (n : Nat), n = 0 ∨ n ≠ 0 :=
+λ n => match n with
+| 0 => (Or.inl rfl)
+| (_ + 1) => Or.inr (λ h => nomatch h)
+
+/-!
+#### Elimination
+
+How do you use a proof of a universal generalization,
+∀ (p : P), Q p? Well it's a function of type P → Q p,
+taking any value (p : P) to a proof of (Q p): that p
+satisfies the predicate Q. To use such a function, you
+apply it to a specific, actual parameter value, p, to
+obtain a proof of (Q p) for that particular p. This
+operation of reducing a proof that everything of a
+certain type has some property (Q) to a proof that one
+particular value of that type has that property is
+called universal specialiation.
+-/
+
+variable
+  (P : Type)
+  (Q : P → Prop)
+  (R : Prop)
+  (t : P)
+
+#check P
+#check Q
+
+#check Q t
+#check ∀ (p : P), Q p
+
+/-!
+#### Function types as special case of ∀ types
+-/
+
+#check ∀ (x : P), R
+
+/-!
+What's remarkable now, is that Lean reports back to us that
+this proposition, ∀ (_ : P), R, is the type, P → R : Prop!
+-/
+
+/-!
+#### Exists (∃)
+-/
+
+-- general form
+example : ∃ (p : P), Q p := _
+
+example : ∃ (n : Nat), isEven n := ⟨ 2 , rfl ⟩
+def exists_even_nat : ∃ (n : Nat), isEven n := ⟨ 2 , rfl ⟩
+
+def foo : (∃ (n : Nat), isEven n) → True
+| ⟨ n', pf ⟩ => _
+
+example : ∃ (n : Nat), n ≠ 0 := ⟨ 5 , _ ⟩
+
+#check 1 = 0
+#check Eq 1 0
+
+#check Eq.refl 1
+
+example : 1 + 1 = 2 := rfl
+
+inductive IsEven : Nat → Prop
+| zero_is_even : IsEven 0
+| even_plus_2_even : ∀ (n : Nat), IsEven n → IsEven (n + 2)
+
+open IsEven
+
+example : IsEven 0 := zero_is_even
+example : IsEven 4 := even_plus_2_even 2 _
