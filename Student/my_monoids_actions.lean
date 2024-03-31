@@ -413,3 +413,93 @@ def sub_State : State → State → Rotation
 | s240, s0 => r240
 | s240, s120 => r120
 | s240, s240 => r0
+
+
+/-3/27-/
+
+theorem rot_add_assoc'' :
+∀ (a : Rotation), 0 + a = a
+| r0 => rfl
+| r120 => rfl
+| r240 => rfl
+
+theorem rot_add_assoc' :
+∀ (a b c : Rotation), (a + b) + c = a + (b + c)
+| r0, b, c => match b with
+  | r0 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+  | r120 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+  | r240 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+| r120, b, c => match b with
+  | r0 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+  | r120 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+  | r240 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+| r240, b, c => match b with
+  | r0 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+  | r120 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+  | r240 => match c with
+    | r0 => rfl
+    | r120 => rfl
+    | r240 => rfl
+
+theorem rot_add_assoc : ∀ (a b c : Rotation), (a+b) + c = a + (b + c) :=
+-- | r0, b, c => match b with
+--   | r0 => match c with
+--    | r0 => _[r0 +r0+r0 = r0 + (r0 +r0)]
+by
+   intros a b c
+   cases a
+   repeat {
+    cases b
+    repeat {
+      cases c
+      repeat {
+        rfl
+      }
+    }
+   }
+
+instance : AddSemigroup Rotation := { add_assoc := rot_add_assoc }
+
+-- theorem rot_zero_add' : ∀ (a : Rotation), 0 + a = A :=
+-- by
+--   intros a
+--   _
+
+/-!
+Proof by induction next time
+-/
+
+/-!
+ind Nat ∀ (P: Nat → Prop),
+  ∀ n : Nat,
+  P ∅ →
+  ∀ n', P n' → P (n' +1) → P n
+
+Proof of inductive
+  assume h' is any Nat and h : P n'
+  show P n
+-/
