@@ -43,6 +43,10 @@ Equivelence
 def isEquiv (r : α → α → Prop), (isSym r) ∧ (isRefl r)
 ∧ (isTrans r)
 
+Example of Equivelment:
+Equal
+Congurent with Mod
+
 Anti-symmetric
 def antiSym (r : α → α → Prop), ∀ (a b : α),
 r a b → r b a → a = b
@@ -50,4 +54,34 @@ r a b → r b a → a = b
 Asymmetric
 def aSym (r : α → α → Prop), ∀ (a b : α),
 r a b → ¬ (r b a)
+-/
+/-!
+4/10
+More Relations
+
+Partial Order
+ - reflexive
+ - anti-symmetirc
+ - transitive
+def isPartialOrder (r : α → α → Prop), (isRefl r) ∧ (antiSym r)
+∧ (isTrans r)
+
+Subset
+S t := ∀ a , a ∈ s → a ∈ t
+
+Proper Subset
+s t := s ⊆ t ∧ ∃ a ∈ t , a ∉ s
+
+Total Order
+A total order relation is a partial order in which every
+element of the set is comparable with every other element of the set.
+ - single_valued r := ∀ x, y, z , r x y → r x z → y = z
+ - an answer for every x
+
+many_to_one function
+r := ∀ x, y, z, r x z → r
+
+one_to_one injective
+r:= single_valued r ∧ ∀ x, y, z, r x z → r y z → x = y
+
 -/
