@@ -84,4 +84,65 @@ r := ∀ x, y, z, r x z → r
 one_to_one injective
 r:= single_valued r ∧ ∀ x, y, z, r x z → r y z → x = y
 
+empty relation
+example:
+inductive Person: Type
+|lu
+|mary
+|jane
+
+def Friends : Person → Person → Prop :=
+
+
+complete relation
+  --Everything is related to everything, including themselves
+
+-/
+
+inductive Person: Type
+|lu
+|mary
+|jane
+
+open Person
+
+def Likes : Person → Person → Prop :=
+ λ p1 p2 => (p1 = lu ∧ p2 = mary) ∨ (p1 = mary ∧ p2 = lu)
+
+
+example : Likes lu mary := Or.inl ⟨rfl, rfl⟩
+
+example : ¬ Likes lu jane :=
+λ h: Likes lu jane => by
+  cases h with
+  |Or.inl l => _
+  |Or.inr r => nomatch r
+
+
+/-!
+Powerset of {1,2,3}
+{1,2}{2,3}{1,3}
+{1}{2}{3}
+{}
+
+poset
+- Partially Ordered Set
+
+One → many -- not single valued
+
+Set → table → Set
+Person → ID
+Person: domain of definition
+values that have a corresponding vlue in the codomain? : domain
+ID: codomain
+the values that the domain corresponds to : range
+
+total functon/injective:
+every element in the domain of definition have a corresponding value in the codomain
+total : F is total iff ∀ a ∈ f.dod, exist b ∈ codomain set, r a b
+
+surjective/onto : f is surjective iff ∀ b ∈ f codomain, ∃ a ∈ f domain, r a b
+
+if a function is both injective and surjective
+
 -/
