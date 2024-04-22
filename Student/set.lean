@@ -145,6 +145,8 @@ every element in the domain of definition have a corresponding value in the codo
 total : F is total iff ∀ a ∈ f.dod, exist b ∈ codomain set, r a b
 
 surjective/onto : f is surjective iff ∀ b ∈ f codomain, ∃ a ∈ f domain, r a b
+--meaning all elements in the codomain is covered
+-- while injective means all elements in the domain is covered
 
 if a function is both injective and surjective
 
@@ -183,9 +185,55 @@ example : 2 ∈ a_set ∪ b_set := by
 
 
 --\ is subtract
-example : 2 ∈ a_set \ b_set := _
+example : 2 ∈ a_set \ b_set := by
+  -- show 2 ∈ a_set ∧ 2 ∉ b_set
+  exact ⟨ Or.inr (Or.inl rfl),
+    (by
+      intro h
+      nomatch h)
+  ⟩
 
 example : 3 ∉ a_set \ b_set := _
+
+/-!
+Compliment of a set
+-/
+def comp123 : Set Nat := {1,2,3}ᶜ
+#reduce comp123
+
+example : 4 ∈ comp123 := by
+  intro h
+  cases h
+  contradiction
+  --the hidden h+ variable can't be refer to, so we need to rename it
+  rename_i h
+  cases h
+  contradiction
+  -- rename_i h
+  -- cases h
+  -- ↑this will also work
+  contradiction
+
+/-!
+Powerset
+poweret of n elements, has 2^n elements
+-/
+
+/-!
+- intersect ∩
+- union ∪
+- compliment ᶜ
+- subset ⊆
+- powerset
+- set difference \
+- set product (cross product)
+  --the cardinality of S X T? |SXT| = |S| X |T|
+- subset of product set (is a relation)
+  -- let r ⊆ S × T be a relation
+  -- sometimes we use e instead of r, because it's an edges in the graph
+- powerset of the product set of S and T is the set of
+-  all relations on S,T
+-/
 
 /-!
 Properties of Relations
